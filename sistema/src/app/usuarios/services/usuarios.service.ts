@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable,BehaviorSubject } from 'rxjs';
+import { Observable,BehaviorSubject,Subject } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 import { tap } from 'rxjs/operators';
 import { UsuariosI } from '../models/usuarios';
@@ -15,6 +15,12 @@ export class UsuariosService {
 
   private token:any='';
 
+  public urlUsuarioIntentaAcceder:string='';
+  public changeLoginStatusSubject=new Subject<boolean>();
+  public changeLoginStatus$=this.changeLoginStatusSubject.asObservable();
+  public changeUserNameSubject=new Subject<String>();
+  public changeUserName$=this.changeUserNameSubject.asObservable();
+
   constructor(private httpClient:HttpClient) { }
 
   login(user:UsuariosI):Observable<TokenI>{
@@ -24,10 +30,9 @@ export class UsuariosService {
       if(res.success){
         var decoded:any = jwt_decode(res.token);
         //guardar token en localstorage
-        var userName=decoded.user.name;
         //this.changeUserNameSubject.next(userName);
         this.saveToken(res.token,decoded.exp)
-        //this.changeLoginStatusSubject.next(true);
+        this.changeLoginStatusSubject.next(true);
       }
       return this.token;  
   })
@@ -38,6 +43,7 @@ export class UsuariosService {
     this.token='';
     localStorage.removeItem("ACCESS_TOKEN");
     localStorage.removeItem("EXPIRES_IN");
+    this.changeLoginStatusSubject.next(false);
   }//Fin de logout
   
   private saveToken(token:string,expiresIn:string):void{
@@ -53,5 +59,15 @@ export class UsuariosService {
     return this.token;
   }//Fin de getToken
 
+  isLoggedIn(url:string):boolean{
+    const isLogged=localStorage.getItem("ACCESS_TOKEN");
+    if(!isLogged){
+      this.urlUsuarioIntentaAcceder=url;
+      return false;
+    }
+    return true;
+  }//Fin de isLoggedIn
+
+  
   }
 
