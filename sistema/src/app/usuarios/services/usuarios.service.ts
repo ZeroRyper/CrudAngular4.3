@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable,BehaviorSubject,Subject } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 import { tap } from 'rxjs/operators';
@@ -18,6 +18,7 @@ export class UsuariosService {
   public urlUsuarioIntentaAcceder:string='';
   public changeLoginStatusSubject=new Subject<boolean>();
   public changeLoginStatus$=this.changeLoginStatusSubject.asObservable();
+  
   public changeUserNameSubject=new Subject<String>();
   public changeUserName$=this.changeUserNameSubject.asObservable();
 
@@ -30,7 +31,8 @@ export class UsuariosService {
       if(res.success){
         var decoded:any = jwt_decode(res.token);
         //guardar token en localstorage
-        //this.changeUserNameSubject.next(userName);
+        var userName=decoded.user.name;
+        this.changeUserNameSubject.next(userName);
         this.saveToken(res.token,decoded.exp)
         this.changeLoginStatusSubject.next(true);
       }
@@ -68,6 +70,62 @@ export class UsuariosService {
     return true;
   }//Fin de isLoggedIn
 
-  
+  getUsers(){
+    return this.httpClient.get(
+      this.AUTH_SERVER+'users',
+      {
+        headers:new HttpHeaders({
+          'Authorization':'token-auth'+ this.getToken()
+        })
+      }
+    );
   }
 
+  
+  getUser(id:string){
+    return this.httpClient.get(
+      this.AUTH_SERVER+'users/'+id,
+      {
+        headers:new HttpHeaders({
+          'Content-Type':'application/json',
+          'Authorization':'token-auth'+ this.getToken()
+        })
+      }
+    );
+  }//Fin de getUsers
+
+addUser(usuario:UsuariosI){
+  return this.httpClient.post(
+    this.AUTH_SERVER+'users/',usuario,
+    {
+      headers:new HttpHeaders({
+        'Content-Type':'application/json',
+          'Authorization':'token-auth'+ this.getToken()
+      })
+    }
+  )
+}
+removeUser(id:string){
+  return this.httpClient.delete(
+    this.AUTH_SERVER+'users/'+ id,
+    {
+      headers:new HttpHeaders({
+        'Content-Type':'application/json',
+          'Authorization':'token-auth'+ this.getToken()
+    }
+  )
+}
+  )
+  }
+  updateUser(usuario:UsuariosI){
+    return this.httpClient.put(
+      this.AUTH_SERVER+'users/'+usuario._id,
+      {
+        headers:new HttpHeaders({
+          'Content-Type':'application/json',
+            'Authorization':'token-auth'+ this.getToken()
+      })
+  }
+    )
+}
+}

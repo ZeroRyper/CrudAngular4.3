@@ -9,12 +9,16 @@ import { UsuariosService } from 'src/app/usuarios/services/usuarios.service';
 export class MenuComponent implements OnInit {
 
   usuarioLogueado:boolean=false;
+  userName:string='';
   constructor( public usuariosService:UsuariosService) { }
 
   ngOnInit(): void {
     this.usuarioLogueado=this.usuariosService.isLoggedIn('');
     this.usuariosService.changeLoginStatus$.subscribe((loggedStatus:boolean)=>{
       this.usuarioLogueado=loggedStatus;
+    })
+    this.usuariosService.changeUserName$.subscribe((userName:any)=>{
+      this.userName=userName;
     })
   }//ngOnInit
   

@@ -7,13 +7,23 @@ import { UsuariosRoutingModule } from './usuarios-routing.module';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { LoginComponent } from './components/login/login.component';
 import { UsuariosService } from './services/usuarios.service';
+import { UsuariodetalleComponent } from './components/usuariodetalle/usuariodetalle.component';
+
+//Importamos ngbootstrap
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+//Importamos reactiveForms
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     UsuariosComponent,
-    LoginComponent
+    LoginComponent,
+    UsuariodetalleComponent
   ],
   imports: [
+    ReactiveFormsModule,
+    NgbModule,
     HttpClientModule,
     FormsModule,
     CommonModule,

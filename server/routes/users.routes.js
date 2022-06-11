@@ -16,6 +16,6 @@ router.delete('/:id',users.deleteUser);
 router.put('/:id',users.updateUser);
 
 //Obtener un usuario
-router.get('/:id',users.getUsers);
+router.get('/:id',users.getUser);
 
 module.exports=router;

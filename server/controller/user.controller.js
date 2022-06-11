@@ -15,10 +15,12 @@ usersController.createUser=async(request,response)=>{
     const name=request.body.name;
     const email=request.body.email;
     const password=request.body.password;
+    const tipo=request.body.tipo;
     const User=new Users({
         name:name,
         email:email,
-        password:password
+        password:password,
+        tipo:tipo
     });
     User.password=bcrypt.hashSync(password,10);
     await User.save()
@@ -46,11 +48,13 @@ usersController.updateUser=async(req,res)=>{
     const name=req.body.name;
     const email=req.body.email;
     const password=req.body.password;
+    const tipo=req.body.type;
 
     const user=new Users({
         name:name,
         email:email,
-        password:password
+        password:password,
+        tipo:tipo
     });
     user._id=id;
     user.password=bcrypt.hashSync(password,10);
@@ -66,7 +70,7 @@ usersController.updateUser=async(req,res)=>{
 
 //Buscar un usuario por id
 usersController.getUser=async(req,res)=>{
-const Users=await Users.findById(req.params.id)
+  await Users.findById(req.params.id)
     .then((user)=>{
         res.json(user);
     })

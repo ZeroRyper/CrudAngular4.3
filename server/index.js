@@ -5,12 +5,15 @@ const cors = require('cors');//permite comunicacion desde fuera del servicio
 const jwt =require('jsonwebtoken');
 const bodyParser=require('body-parser');
 const bcrypt=require('bcryptjs');
+const authorization=require('auth-header');
 
 const Users=require('./models/Users');
 
 const app = express();
 //Conectamos la base de datos
 const { mongoose } = require('./database'); 
+const { request } = require('express');
+const { response } = require('express');
 
 
 //Configuraciones
@@ -64,9 +67,17 @@ res.json({
 // request.query.token (en la url)
 // request. headers (contiene las cabeceras de authorization )
 app.use((req, res, next)=>{
+    var tokenauth='';
+
+        if(request.get('authorization')){
+            auth=authorization.parse(request.get('authorization'));
+            if(auth.scheme=='token-auth')
+            tokenauth=auth.token;
+        }
+    
 const token= req.body.token || //json
 req.query.token || //url
-req.headers['authorization ']; //headers
+tokenauth;
 
 if(token){
     jwt.verify(token,app.get('secret'),(err,decoded)=>{
